@@ -81,7 +81,7 @@ with open(filename_save_data, "wb") as f:
 r = requests.request("GET", "{:s}/topics".format(endpoint_url), timeout=10)
 print("saving data to {:s}".format(filename_save_data))
 with open(filename_save_topics, "wb") as f:
-	f.write(zlib.compress(msgpack.packb(sentiment_data)))
+	f.write(zlib.compress(msgpack.packb(r.json())))
 
 
 print("done!")
