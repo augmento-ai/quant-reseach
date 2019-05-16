@@ -28,10 +28,8 @@ aug_signal_b = aug_data[:, aug_topics_inv["Negative"]]
 fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
 
 # initialise some labels for the plot
-datenum_aug_data = [md.date2num(datetime.datetime.fromtimestamp(el))
-							for el in t_aug_data]
-datenum_price_data = [md.date2num(datetime.datetime.fromtimestamp(el))
-							for el in t_price_data]
+datenum_aug_data = [md.date2num(datetime.datetime.fromtimestamp(el)) for el in t_aug_data]
+datenum_price_data = [md.date2num(datetime.datetime.fromtimestamp(el)) for el in t_price_data]
 
 # plot stuff
 ax[0].grid(linewidth=0.4)

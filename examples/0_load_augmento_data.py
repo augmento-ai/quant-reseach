@@ -7,10 +7,11 @@ import msgpack
 
 # import files from src
 sys.path.insert(0, "src")
+import helper_functions as hf
 import io_helper as ioh
 
 # define the url of the endpoint
-endpoint_url = "http://54.76.10.107/v0.1"
+endpoint_url = "http://api-dev.augmento.ai/v0.1"
 
 # define where we're going to save the data
 path_save_data = "data/example_data"
@@ -49,7 +50,7 @@ while start_ptr >= 0:
 	# if the request was ok, add the data and increment the start_ptr
 	# else return an error
 	if r.status_code == 200:
-		temp_data = r.json()
+		temp_data = hf.decode_bytes(r.json())
 		start_ptr += count_ptr
 	else:
 		raise Exception("api call failed with status_code {:d}".format(r.status_code))
