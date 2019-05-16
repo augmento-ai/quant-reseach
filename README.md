@@ -6,11 +6,11 @@ This repo serves as a quickstart guide for using using Augmento sentiment data, 
 
 1) install requirements
 
-```pip install -r requirements.txt --user```
+```pip3 install -r requirements.txt --user```
 
 2) run tests
 
-```python -m unittest discover -v```
+```python3 -m unittest discover -v```
 
 3) run the examples
 
