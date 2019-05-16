@@ -10,6 +10,9 @@ sys.path.insert(0, "src")
 import io_helper as ioh
 import datetime_helper as dh
 
+# define the url of the endpoint
+endpoint_url = "https://www.bitmex.com/api/v1/trade/bucketed"
+
 # define where we're going to save the data
 path_save_data = "data/example_data"
 filename_save_data = "{:s}/bitmex_data.msgpack.zlib".format(path_save_data)
@@ -27,9 +30,6 @@ count_ptr = 100
 
 # get the data
 while start_ptr >= 0:
-	
-	# define the url of the endpoint
-	endpoint_url = "https://www.bitmex.com/api/v1/trade/bucketed"
 	
 	# define the parameters of the request
 	params = {
