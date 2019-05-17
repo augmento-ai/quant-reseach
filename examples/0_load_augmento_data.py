@@ -10,13 +10,12 @@ sys.path.insert(0, "src")
 import helper_functions as hf
 import io_helper as ioh
 
-# define the url of the endpoint
-endpoint_url = "http://api-dev.augmento.ai/v0.1"
+# define the url of the endpoint to get event data
+endpoint_url = "http://api-dev.augmento.ai/v0.1/events/aggregated"
 
 # define where we're going to save the data
 path_save_data = "data/example_data"
 filename_save_data = "{:s}/augmento_data.msgpack.zlib".format(path_save_data)
-filename_save_topics = "{:s}/augmento_topics.msgpack.zlib".format(path_save_data)
 
 # define the start and end times
 datetime_start = datetime.datetime(2018, 6, 1)
@@ -44,8 +43,7 @@ while start_ptr >= 0:
 	}
 	
 	# make the request
-	r = requests.request("GET", "{:s}/events/aggregated".format(endpoint_url),
-	                     params=params, timeout=10)
+	r = requests.request("GET", endpoint_url, params=params, timeout=10)
 	
 	# if the request was ok, add the data and increment the start_ptr
 	# else return an error
@@ -77,12 +75,6 @@ ioh.check_path(path_save_data, create_if_not_exist=True)
 print("saving data to {:s}".format(filename_save_data))
 with open(filename_save_data, "wb") as f:
 	f.write(zlib.compress(msgpack.packb(sentiment_data)))
-
-# also request and save a list of the augmento topics
-r = requests.request("GET", "{:s}/topics".format(endpoint_url), timeout=10)
-print("saving data to {:s}".format(filename_save_data))
-with open(filename_save_topics, "wb") as f:
-	f.write(zlib.compress(msgpack.packb(r.json())))
 
 
 print("done!")
