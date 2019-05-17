@@ -7,8 +7,8 @@ import msgpack
 
 # import files from src
 sys.path.insert(0, "src")
+import helper_functions as hf
 import io_helper as ioh
-import datetime_helper as dh
 
 # define the url of the endpoint
 endpoint_url = "https://www.bitmex.com/api/v1/trade/bucketed"
