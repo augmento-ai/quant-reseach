@@ -48,7 +48,7 @@ while start_ptr >= 0:
 	# if the request was ok, add the data and increment the start_ptr
 	# else return an error
 	if r.status_code == 200:
-		temp_data = hf.decode_bytes(r.json())
+		temp_data = r.json()
 		start_ptr += count_ptr
 	else:
 		raise Exception("api call failed with status_code {:d}".format(r.status_code))

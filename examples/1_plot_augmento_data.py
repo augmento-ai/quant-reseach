@@ -15,6 +15,7 @@ filename_augmento_topics = "data/example_data/augmento_topics.msgpack.zlib"
 filename_augmento_data = "data/example_data/augmento_data.msgpack.zlib"
 filename_bitmex_data = "data/example_data/bitmex_data.msgpack.zlib"
 
+# load the example data
 all_data = eh.load_example_data(filename_augmento_topics,
                              filename_augmento_data,
                              filename_bitmex_data)
