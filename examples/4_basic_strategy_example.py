@@ -45,6 +45,9 @@ pnl = np.zeros(price_data.shape)
 pnl[0] = 1.0
 for i_p in range(price_data.shape[0])[1:]:
 	
+	# if sentiment score is positive, simulate long position
+	# else if sentiment score is negative, simulate short position
+	# (note that this is a very approximate market simulation!)
 	if sent_score[i_p-1] > 0.0:
 		pnl[i_p] = (price_data[i_p] / price_data[i_p-1]) * pnl[i_p-1]
 	elif sent_score[i_p-1] <= 0.0:
