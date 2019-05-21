@@ -18,7 +18,7 @@ path_save_data = "data/example_data"
 filename_save_data = "{:s}/augmento_data.msgpack.zlib".format(path_save_data)
 
 # define the start and end times
-datetime_start = datetime.datetime(2018, 6, 1)
+datetime_start = datetime.datetime(2017, 1, 1)
 datetime_end = datetime.datetime(2019, 1, 1)
 
 # initialise a store for the data we're downloading
@@ -26,7 +26,8 @@ sentiment_data = []
 
 # define a start pointer to track multiple requests
 start_ptr = 0
-count_ptr = 100
+#count_ptr = 100
+count_ptr = 1000
 
 # get the data
 while start_ptr >= 0:
@@ -66,7 +67,7 @@ while start_ptr >= 0:
 	print(str_print)
 	
 	# sleep
-	time.sleep(1.0)
+	time.sleep(2.0)
 
 # check if the data path exists
 ioh.check_path(path_save_data, create_if_not_exist=True)
