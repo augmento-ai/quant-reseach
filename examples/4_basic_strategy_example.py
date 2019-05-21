@@ -29,11 +29,11 @@ t_aug_data, aug_data = ah.strip_data_by_time(t_aug_data, aug_data, t_start, t_en
 t_price_data, price_data = ah.strip_data_by_time(t_price_data, price_data, t_start, t_end)
 
 # get the signals we're interested in
-aug_signal_a = aug_data[:, aug_topics_inv["Positive"]].astype(np.float64)
-aug_signal_b = aug_data[:, aug_topics_inv["Negative"]].astype(np.float64)
+aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]].astype(np.float64)
+aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]].astype(np.float64)
 
 # generate a non-stationary ratio
-n_days = 3
+n_days = 7
 window_size = 24 * n_days
 sent_ratio = ah.safe_divide(aug_signal_a, aug_signal_b)
 sent_ratio_smooth = ah.causal_rolling_average(sent_ratio, window_size)
@@ -53,6 +53,7 @@ for i_p in range(price_data.shape[0])[1:]:
 	elif sent_score[i_p-1] <= 0.0:
 		pnl[i_p] = (price_data[i_p-1] / price_data[i_p]) * pnl[i_p-1]
 	
+	# simulate a trade fee if we cross from long to short, or visa versa
 	if np.sign(sent_score[i_p]) != np.sign(sent_score[i_p-1]):
 		pnl[i_p] = pnl[i_p] - (buy_sell_fee * pnl[i_p])
 
