@@ -22,8 +22,8 @@ all_data = eh.load_example_data(filename_augmento_topics,
 aug_topics, aug_topics_inv, t_aug_data, aug_data, t_price_data, price_data = all_data
 
 # get the signals we're interested in
-aug_signal_a = aug_data[:, aug_topics_inv["Positive"]]
-aug_signal_b = aug_data[:, aug_topics_inv["Negative"]]
+aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]]
+aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]]
 
 # set up the figure
 fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
