@@ -20,7 +20,7 @@ Run tests:
 
 ### Quickstart
 
-The quickstart examples are the quickest way to get started.
+The quickstart examples are the quickest way to download some data, plot the data, and run a simple strategy.
 
 Cache two years of Augmento data from the Augmento ReST API to a local folder:
 
