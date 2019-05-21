@@ -32,13 +32,21 @@ count_ptr = 100
 # get the data
 while start_ptr >= 0:
 	
+	# bug in bitmex ptr system, need to shift the start date forward for each request
+	if market_data == []:
+		str_datetime_start = datetime_start.strftime("%Y-%m-%dT%H:%M:%SZ")
+		start_ptr = 0
+	else:
+		str_datetime_start = market_data[-1]["timestamp"]
+		start_ptr = 1
+	
 	# define the parameters of the request
 	params = {
 		"symbol" : "XBt",
 		"binSize" : "1h",
 		"count" : count_ptr,
 		"start" : start_ptr,
-		"startTime" : datetime_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+		"startTime" : str_datetime_start,
 		"endTime" : datetime_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
 	}
 	
@@ -54,21 +62,23 @@ while start_ptr >= 0:
 		raise Exception("api call failed with status_code {:d}".format(r.status_code))
 	
 	# if we didn't get any data, assume we've got all the data
+	# else add the data to the data store
 	if len(temp_data) == 0:
 		start_ptr = -1
-	
-	# convert the iso timestamps to epoch times
-	for td in temp_data:
-		t_epoch = dh.timestamp_to_epoch(td["timestamp"], "%Y-%m-%dT%H:%M:%S.000Z")
-		td.update({"t_epoch" : t_epoch})
-	
-	# extend the data store
-	market_data.extend(temp_data)
-	
-	# print the progress
-	str_print = "got data from {:s} to {:s}".format(*(market_data[0]["timestamp"],
-	                                                market_data[-1]["timestamp"],))
-	print(str_print)
+	else:
+		
+		# convert the iso timestamps to epoch times
+		for td in temp_data:
+			t_epoch = dh.timestamp_to_epoch(td["timestamp"], "%Y-%m-%dT%H:%M:%S.000Z")
+			td.update({"t_epoch" : t_epoch})
+		
+		# extend the data store
+		market_data.extend(temp_data)
+		
+		# print the progress
+		str_print = "got data from {:s} to {:s}".format(*(temp_data[0]["timestamp"],
+		                                                temp_data[-1]["timestamp"],))
+		print(str_print)
 	
 	# sleep
 	time.sleep(2.1)
