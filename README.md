@@ -10,7 +10,7 @@ Bitmex API docs: https://www.bitmex.com/api/explorer/
 
 Prerequisites
 
-	> python 2.7
+	python 2.7 or later
 
 
 Install requirements
