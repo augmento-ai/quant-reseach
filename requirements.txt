@@ -1,5 +1,4 @@
 requests
-zlib
 msgpack
 numpy
 matplotlib

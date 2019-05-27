@@ -19,6 +19,7 @@ Prerequisites
 Install requirements
 
 	pip install -r requirements.txt --user
+	zlib (already included with MacOS)
 
 Run tests
 
