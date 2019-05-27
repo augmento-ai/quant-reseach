@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="documentation/simple_strategy_backtest_example.png" title="simple_strategy_backtest_example.png">
+</p>
+
 # Quant Reseach
 
 This repo serves as a quickstart guide for using using Augmento sentiment data, as well as a working repo for analysing the data and developing example strategies.

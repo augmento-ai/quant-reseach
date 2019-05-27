@@ -78,11 +78,13 @@ ax[1].set_ylabel("Seniment score")
 ax[2].set_ylabel("PnL")
 ax[1].set_ylim([-5.5, 5.5])
 
+ax[0].set_title("4_basic_strategy_example.py")
+
 # generate the time axes
 plt.subplots_adjust(bottom=0.2)
 plt.xticks( rotation=25 )
 ax[0]=plt.gca()
-xfmt = md.DateFormatter('%Y-%m-%d %H:%M')
+xfmt = md.DateFormatter('%Y-%m-%d')
 ax[0].xaxis.set_major_formatter(xfmt)
 
 # show the plot
