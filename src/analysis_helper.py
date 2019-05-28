@@ -3,11 +3,6 @@ import numpy as np
 def safe_divide(arr_a, arr_b):
 	return np.divide(arr_a, arr_b, out=np.zeros_like(arr_a), where=(arr_b != 0))
 
-def strip_data_by_time(t_data, data, t_min, t_max):
-	data = np.array([s for s, t in zip(data, t_data) if t >= t_min and t <= t_max])
-	t_data = np.array([t for t in t_data if t >= t_min and t <= t_max])
-	return t_data, data
-
 def causal_rolling_average(arr, window_size):
 	# find the mean of the past X samples (only look into the past)
 	filt = np.ones(window_size) / float(window_size)

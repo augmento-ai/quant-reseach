@@ -22,12 +22,6 @@ all_data = eh.load_example_data(filename_augmento_topics,
                              filename_bitmex_data)
 aug_topics, aug_topics_inv, t_aug_data, aug_data, t_price_data, price_data = all_data
 
-# strip the sentiments and prices outside the shared time range
-t_start = max(np.min(t_aug_data), np.min(t_price_data))
-t_end = min(np.max(t_aug_data), np.max(t_price_data))
-t_aug_data, aug_data = ah.strip_data_by_time(t_aug_data, aug_data, t_start, t_end)
-t_price_data, price_data = ah.strip_data_by_time(t_price_data, price_data, t_start, t_end)
-
 # get the signals we're interested in
 aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]].astype(np.float64)
 aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]].astype(np.float64)
