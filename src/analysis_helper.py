@@ -9,15 +9,25 @@ def strip_data_by_time(t_data, data, t_min, t_max):
 	return t_data, data
 
 def causal_rolling_average(arr, window_size):
+	# find the mean of the past X samples (only look into the past)
 	filt = np.ones(window_size) / float(window_size)
 	return np.convolve(arr, filt, mode="FULL")[0:arr.shape[0]]
 
 def causal_rolling_sd(arr, window_size):
+	# standardise each sample w.r.t. the past X samples (only look into the past)
+	
+	# create an array to hold our rolling window, and an output array
 	new_arr = np.hstack((np.zeros(window_size-1), arr))
 	out_arr = np.zeros(arr.shape[0])
+	
+	# for each output...
 	for i in range(out_arr.shape[0]):
+		
+		# find the numerator and denom. for equ. x_sd = (x_i - mean_w) / sigma_w
 		num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
 		denom = np.std(new_arr[i : i + window_size-1])
+		
+		# find the sample standardised w.r.t. the past window
 		out_arr[i] = np.divide(num, denom, out=np.zeros_like(num), where=(denom != 0))
 	return out_arr
 
