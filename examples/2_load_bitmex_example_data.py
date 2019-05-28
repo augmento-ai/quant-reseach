@@ -20,7 +20,7 @@ filename_save_data = "{:s}/bitmex_data.msgpack.zlib".format(path_save_data)
 
 # define the start and end times
 datetime_start = datetime.datetime(2017, 1, 1)
-datetime_end = datetime.datetime(2019, 1, 1)
+datetime_end = datetime.datetime(2019, 4, 1)
 
 # initialise a store for the data we're downloading
 market_data = []
