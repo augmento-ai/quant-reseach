@@ -2,19 +2,13 @@ import datetime
 import pprint
 import msgpack
 import zlib
+import numpy as np
 
 import io_helper as ioh
 import datetime_helper as dh
 import load_augmento_data_helper as ladh
 import load_binance_data_helper as lbdh
 
-
-def list_file_dates_for_path(path, filename_suffix, datetime_format_str):
-	date_strs = ioh.list_files_in_path_os(path, filename_suffix=filename_suffix)
-	date_strs = [el.split("/")[-1].replace(filename_suffix, "") for el in date_strs]
-	dates = [dh.datetime_str_to_datetime(el, timestamp_format_str=datetime_format_str)
-					for el in date_strs]
-	return dates
 
 def find_missing_date_batches(missing_days, required_days):
 	missing_day_batches = []
@@ -24,6 +18,11 @@ def find_missing_date_batches(missing_days, required_days):
 		else:
 			missing_day_batches.append([missing_days[i_amd]])
 	return missing_day_batches
+
+def strip_data_by_time(t_data, data, t_min, t_max):
+	data = np.array([s for s, t in zip(data, t_data) if t >= t_min and t <= t_max])
+	t_data = np.array([t for t in t_data if t >= t_min and t <= t_max])
+	return t_data, data
 
 def load_data(path_data="data/cache",
               augmento_coin=None,
@@ -40,6 +39,7 @@ def load_data(path_data="data/cache",
 	
 	# specify the path for the binance data cache
 	path_augmento_data = "{:s}/augmento/{:s}/{:s}/{:d}".format(*(path_data, augmento_source, augmento_coin, dt_bin_size))
+	path_augmento_topics = "{:s}/augmento/".format(path_data)
 	
 	# specify the path for the augmento data cache
 	path_binance_data = "{:s}/binance/{:s}/{:d}".format(*(path_data, binance_symbol, dt_bin_size))
@@ -49,10 +49,10 @@ def load_data(path_data="data/cache",
 	ioh.check_path(path_binance_data, create_if_not_exist=True)
 	
 	# check which days of data exist for the augmento data and binance data
-	augmento_dates = list_file_dates_for_path(path_augmento_data, ".msgpack.zlib", "%Y%m%d")
-	binance_dates = list_file_dates_for_path(path_binance_data, ".msgpack.zlib", "%Y%m%d")
+	augmento_dates = dh.list_file_dates_for_path(path_augmento_data, ".msgpack.zlib", "%Y%m%d")
+	binance_dates = dh.list_file_dates_for_path(path_binance_data, ".msgpack.zlib", "%Y%m%d")
 	
-	# remove any dates from the last 3 days, so we reload of recent data
+	# remove any dates from the last 3 days, so we reload recent data
 	datetime_now = datetime.datetime.now()
 	augmento_dates = [el for el in augmento_dates if el < dh.add_days_to_datetime(datetime_now, -3)]
 	binance_dates = [el for el in binance_dates if el < dh.add_days_to_datetime(datetime_now, -3)]
@@ -67,6 +67,12 @@ def load_data(path_data="data/cache",
 	# group the missing days by batch
 	augmento_missing_batches = find_missing_date_batches(augmento_missing_dates, required_dates)
 	binance_missing_batches = find_missing_date_batches(binance_missing_dates, required_dates)
+	
+	# load the augmento keys
+	aug_keys = ladh.load_keys(path_augmento_topics)
+	
+	# load the binance keys
+	bin_keys = lbdh.load_keys()
 	
 	# for each of the missing batches of augmento data, get the data and cache it
 	for abds in augmento_missing_batches:
@@ -89,13 +95,17 @@ def load_data(path_data="data/cache",
 		                                          bbds[0],
 		                                          dh.add_days_to_datetime(bbds[-1], 1))
 	
-	quit()
+	# load the data
+	t_aug_data, aug_data = ladh.load_cached_data(path_augmento_data, datetime_start, datetime_end)
+	t_bin_data, bin_data = lbdh.load_cached_data(path_binance_data, datetime_start, datetime_end)
 	
-	"""
-	pprint.pprint(augmento_missing_batches)
-	print("")
-	pprint.pprint(binance_missing_batches)
-	"""
+	# strip the data
+	t_min = dh.datetime_to_epoch(datetime_start)
+	t_max = dh.datetime_to_epoch(datetime_end)
+	t_aug_data, aug_data = strip_data_by_time(t_aug_data, aug_data, t_min, t_max)
+	t_bin_data, bin_data = strip_data_by_time(t_bin_data, bin_data, t_min, t_max)
+	
+	return t_aug_data, t_bin_data, aug_data, bin_data, aug_keys, bin_keys
 
 
 

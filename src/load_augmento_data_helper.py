@@ -3,13 +3,29 @@ import time
 import pprint
 import zlib
 import msgpack
+import numpy as np
 
 import datetime_helper as dh
 
 # define the base url of the endpoint
 base_url = "http://api-dev.augmento.ai/v0.1"
 
-def load_and_cache_data(path_output, source, coin, bin_size, datetime_start, datetime_end):
+def load_keys(path_input):
+	
+	# if a list of topics doesn't exist, cache it
+	path_augmento_topics = "{:s}/topics.msgpack.zlib".format(path_input)
+	try:
+		with open(path_augmento_topics, "rb") as f:
+			augmento_topics = msgpack.unpackb(zlib.decompress(f.read()), encoding='utf-8')
+	except:
+		augmento_topics = requests.request("GET", "{:s}/topics".format(base_url), timeout=10).json()
+		with open(path_augmento_topics, "wb") as f:
+			f.write(zlib.compress(msgpack.packb(augmento_topics)))
+	
+	return {v : k for k, v in augmento_topics.items()}
+	
+
+def load_and_cache_data(path_output, source, coin, dt_bin_size, datetime_start, datetime_end):
 	
 	# make sure the start date and end date are rounded to the nearest day
 	datetime_start = dh.round_datetime_to_day_start(datetime_start)
@@ -28,8 +44,8 @@ def load_and_cache_data(path_output, source, coin, bin_size, datetime_start, dat
 	# make sure the bin_size exists
 	available_bin_sizes = requests.request("GET", "{:s}/bin_sizes".format(base_url), timeout=10).json()
 	available_bin_sizes = {v : k for k, v in available_bin_sizes.items()}
-	if bin_size not in available_bin_sizes:
-		raise Exception("invalid augmento bin_size: {:s} not in: {:s}".format(*(bin_size, available_bin_sizes)))
+	if dt_bin_size not in available_bin_sizes:
+		raise Exception("invalid augmento bin_size: {:s} not in: {:s}".format(*(dt_bin_size, available_bin_sizes)))
 	
 	# initialise a store for the data we're downloading
 	sentiment_data = []
@@ -45,7 +61,7 @@ def load_and_cache_data(path_output, source, coin, bin_size, datetime_start, dat
 		params = {
 			"source" : source,
 			"coin" : coin,
-			"bin_size" : available_bin_sizes[bin_size],
+			"bin_size" : available_bin_sizes[dt_bin_size],
 			"count_ptr" : count_ptr,
 			"start_ptr" : start_ptr,
 			"start_datetime" : datetime_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -94,9 +110,34 @@ def load_and_cache_data(path_output, source, coin, bin_size, datetime_start, dat
 		# generate/filter the output data
 		temp_start = dh.datetime_to_epoch(day)
 		temp_end = dh.datetime_to_epoch(dh.add_days_to_datetime(day, 1))
+		
+		# get the data for this day (note that t_epoch is the OPEN time of the bin)
 		output_data = [el for el in sentiment_data if el["t_epoch"] >= temp_start and el["t_epoch"] < temp_end]
 		
 		# save the data
 		with open(output_filename, "wb") as f:
 			f.write(zlib.compress(msgpack.packb(output_data)))
+
+def load_cached_data(path_input, datetime_start, datetime_end):
 	
+	# initialise the output data
+	output_data = []
+	
+	# get a list of the files we need to open
+	required_dates = dh.get_datetimes_between_datetimes(datetime_start, datetime_end)
+	
+	# go through all the dates and load the corrisponding files
+	for rd in required_dates:
+		
+		# load the file
+		input_filename_short = dh.datetime_to_str(rd, timestamp_format_str="%Y%m%d")
+		input_filename = "{:s}/{:s}.msgpack.zlib".format(*(path_input, input_filename_short))
+		with open(input_filename, "rb") as f:
+			output_data.extend(msgpack.unpackb(zlib.decompress(f.read()), encoding='utf-8'))
+	
+	# format the data
+	t_data = np.array([el["t_epoch"] for el in output_data], dtype=np.float64)
+	feat_data = np.array([el["counts"] for el in output_data], dtype=np.float64)
+	
+	return t_data, feat_data
+

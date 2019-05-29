@@ -1,4 +1,5 @@
 import datetime
+import io_helper as ioh
 
 # set the utc value of the epoch
 epoch = datetime.datetime.utcfromtimestamp(0)
@@ -36,6 +37,13 @@ def datetime_to_epoch(datetime_a):
 
 def timestamp_to_datetime(timestamp_str, timestamp_format_str):
 	return datetime.datetime.strptime(timestamp_str, timestamp_format_str)
+
+def list_file_dates_for_path(path, filename_suffix, datetime_format_str):
+	date_strs = ioh.list_files_in_path_os(path, filename_suffix=filename_suffix)
+	date_strs = [el.split("/")[-1].replace(filename_suffix, "") for el in date_strs]
+	dates = [datetime_str_to_datetime(el, timestamp_format_str=datetime_format_str)
+					for el in date_strs]
+	return dates
 
 def get_datetimes_between_datetimes(datetime_start, datetime_end):
 	#return [datetime_start + datetime.timedelta(days=x)
