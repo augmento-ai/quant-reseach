@@ -26,7 +26,7 @@ def datetime_to_str(datetime_a, timestamp_format_str="%Y-%m-%d %H:%M:%S"):
 
 def round_datetime_to_day_start(datetime_a, forward_days=0):
 	datetime_a = datetime_a.replace(hour=0, minute=0, second=0, microsecond=0)
-	return datetime_a + datetime.timedelta(days=forward_days)
+	return add_days_to_datetime(datetime_a, forward_days)
 
 def add_days_to_datetime(datetime_a, forward_days):
 	return datetime_a + datetime.timedelta(days=forward_days)
