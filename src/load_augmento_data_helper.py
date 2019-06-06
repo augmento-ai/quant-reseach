@@ -22,7 +22,7 @@ def load_keys(path_input):
 		with open(path_augmento_topics, "wb") as f:
 			f.write(zlib.compress(msgpack.packb(augmento_topics)))
 	
-	return {v : k for k, v in augmento_topics.items()}
+	return {v : int(k) for k, v in augmento_topics.items()}
 	
 
 def load_and_cache_data(path_output, source, coin, dt_bin_size, datetime_start, datetime_end):
@@ -86,10 +86,11 @@ def load_and_cache_data(path_output, source, coin, dt_bin_size, datetime_start, 
 		# extend the data store
 		sentiment_data.extend(temp_data)
 		
-		# print the progress
-		str_print = "got augmento data from {:s} to {:s}".format(*(sentiment_data[0]["datetime"],
-		                                                         sentiment_data[-1]["datetime"],))
-		print(str_print)
+		if len(temp_data) > 0:
+			# print the progress
+			str_print = "got augmento data from {:s} to {:s}".format(*(sentiment_data[0]["datetime"],
+			                                                         sentiment_data[-1]["datetime"],))
+			print(str_print)
 		
 		# sleep
 		time.sleep(2.0)
@@ -132,8 +133,11 @@ def load_cached_data(path_input, datetime_start, datetime_end):
 		# load the file
 		input_filename_short = dh.datetime_to_str(rd, timestamp_format_str="%Y%m%d")
 		input_filename = "{:s}/{:s}.msgpack.zlib".format(*(path_input, input_filename_short))
-		with open(input_filename, "rb") as f:
-			output_data.extend(msgpack.unpackb(zlib.decompress(f.read()), encoding='utf-8'))
+		try:
+			with open(input_filename, "rb") as f:
+				output_data.extend(msgpack.unpackb(zlib.decompress(f.read()), encoding='utf-8'))
+		except:
+			pass
 	
 	# format the data
 	t_data = np.array([el["t_epoch"] for el in output_data], dtype=np.float64)

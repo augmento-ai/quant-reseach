@@ -7,7 +7,8 @@ import numpy as np
 import io_helper as ioh
 import datetime_helper as dh
 import load_augmento_data_helper as ladh
-import load_binance_data_helper as lbdh
+#import load_binance_data_helper as lbdh
+import load_kraken_data_helper as lbdh
 
 
 def find_missing_date_batches(missing_days, required_days):
@@ -33,6 +34,8 @@ def load_data(path_data="data/cache",
               datetime_end=None,
               augmento_api_key=None):
 	
+	datetime_end = min(datetime.datetime.now(), datetime_end)
+	
 	# check the input arguments
 	if None in [binance_symbol, augmento_coin, augmento_source, dt_bin_size, datetime_start, datetime_end]:
 		raise Exception("missing required param(s) in load_data()")
@@ -42,7 +45,8 @@ def load_data(path_data="data/cache",
 	path_augmento_topics = "{:s}/augmento/".format(path_data)
 	
 	# specify the path for the augmento data cache
-	path_binance_data = "{:s}/binance/{:s}/{:d}".format(*(path_data, binance_symbol, dt_bin_size))
+	#path_binance_data = "{:s}/binance/{:s}/{:d}".format(*(path_data, binance_symbol, dt_bin_size))
+	path_binance_data = "{:s}/kraken/{:s}/{:d}".format(*(path_data, binance_symbol, dt_bin_size))
 	
 	# make sure all the paths exist
 	ioh.check_path(path_augmento_data, create_if_not_exist=True)
@@ -100,8 +104,8 @@ def load_data(path_data="data/cache",
 	t_bin_data, bin_data = lbdh.load_cached_data(path_binance_data, datetime_start, datetime_end)
 	
 	# strip the data
-	t_min = dh.datetime_to_epoch(datetime_start)
-	t_max = dh.datetime_to_epoch(datetime_end)
+	t_min = max([t_aug_data[0], t_bin_data[0], dh.datetime_to_epoch(datetime_start)])
+	t_max = min([t_aug_data[-1], t_bin_data[-1], dh.datetime_to_epoch(datetime_end)])
 	t_aug_data, aug_data = strip_data_by_time(t_aug_data, aug_data, t_min, t_max)
 	t_bin_data, bin_data = strip_data_by_time(t_bin_data, bin_data, t_min, t_max)
 	
