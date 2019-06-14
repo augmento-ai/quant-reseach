@@ -1,4 +1,5 @@
 import numpy as np
+import numba as nb
 
 def safe_divide(arr_a, arr_b):
 	return np.divide(arr_a, arr_b, out=np.zeros_like(arr_a), where=(arr_b != 0))
@@ -37,3 +38,39 @@ def compare_sents(sent_a, sent_b, window_size=1):
 	
 	return s
 
+@nb.jit("(f8[:])(f8[:], f8[:])", nopython=True, nogil=True, cache=True)
+def nb_safe_divide(a, b):
+	c = np.zeros(a.shape[0], dtype=np.float64)
+	for i in range(a.shape[0]):
+		if b[i] != 0.0:
+			c[i] = a[i] / b[i]
+	return c
+
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+def nb_causal_rolling_average(arr, window_size):
+	# create an array to hold our rolling window, and an output array
+	new_arr = np.hstack((np.zeros(window_size-1), arr))
+	out_arr = np.zeros(arr.shape[0])
+	for i in range(arr.shape[0]):
+		out_arr[i] = np.mean(new_arr[i : i + window_size])
+	return out_arr
+
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+def nb_causal_rolling_sd(arr, window_size):
+	# create an array to hold our rolling window, and an output array
+	new_arr = np.hstack((np.zeros(window_size-1), arr))
+	out_num_arr = np.zeros(arr.shape[0])
+	out_den_arr = np.zeros(arr.shape[0])
+	out_arr = np.zeros(arr.shape[0])
+	for i in range(arr.shape[0]):
+		out_num_arr[i] = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
+		out_den_arr[i] = np.std(new_arr[i : i + window_size-1])
+	out_arr = nb_safe_divide(out_num_arr, out_den_arr)
+	return out_arr
+	
+@nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True, cache=True)
+def nb_calc_sentiment_score_a(sent_a, sent_b, ra_win_size, std_win_size):
+	sent_ratio = nb_safe_divide(sent_a, sent_b)
+	sent_ratio_smooth = nb_causal_rolling_average(sent_ratio, ra_win_size)
+	sent_score = nb_causal_rolling_sd(sent_ratio_smooth, std_win_size)
+	return sent_score

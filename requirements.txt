@@ -3,3 +3,4 @@ msgpack
 numpy
 matplotlib
 pprint
+numba
