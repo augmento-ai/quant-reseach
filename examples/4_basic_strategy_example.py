@@ -26,30 +26,18 @@ aug_topics, aug_topics_inv, t_aug_data, aug_data, t_price_data, price_data = all
 aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]].astype(np.float64)
 aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]].astype(np.float64)
 
-# generate a non-stationary ratio
-n_days = 7
+# define the window size for the sentiment score calculation
 window_size = 24 * n_days
-sent_ratio = ah.safe_divide(aug_signal_a, aug_signal_b)
-sent_ratio_smooth = ah.causal_rolling_average(sent_ratio, window_size)
-sent_score = ah.causal_rolling_sd(sent_ratio_smooth, 24*n_days)
 
-# calculate the pnl (very basic backtest)
+# generate the sentiment score
+sent_score = ah.nb_calc_sentiment_score_a(aug_signal_a, aug_signal_b, window_size, window_size)
+
+# define some parameters for the backtest
+start_pnl = 1.0
 buy_sell_fee = 0.0
-pnl = np.zeros(price_data.shape)
-pnl[0] = 1.0
-for i_p in range(price_data.shape[0])[1:]:
-	
-	# if sentiment score is positive, simulate long position
-	# else if sentiment score is negative, simulate short position
-	# (note that this is a very approximate market simulation!)
-	if sent_score[i_p-1] > 0.0:
-		pnl[i_p] = (price_data[i_p] / price_data[i_p-1]) * pnl[i_p-1]
-	elif sent_score[i_p-1] <= 0.0:
-		pnl[i_p] = (price_data[i_p-1] / price_data[i_p]) * pnl[i_p-1]
-	
-	# simulate a trade fee if we cross from long to short, or visa versa
-	if np.sign(sent_score[i_p]) != np.sign(sent_score[i_p-1]):
-		pnl[i_p] = pnl[i_p] - (buy_sell_fee * pnl[i_p])
+
+# run the backtest
+pnl = ah.nb_backtest_a(price_data, sent_score, start_pnl, buy_sell_fee)
 
 # set up the figure
 fig, ax = plt.subplots(3, 1, sharex=True, sharey=False)
