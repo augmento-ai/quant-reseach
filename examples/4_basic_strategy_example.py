@@ -27,6 +27,7 @@ aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]].astype(np.float64)
 aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]].astype(np.float64)
 
 # define the window size for the sentiment score calculation
+n_days = 7
 window_size = 24 * n_days
 
 # generate the sentiment score
