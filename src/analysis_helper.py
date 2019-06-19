@@ -12,7 +12,7 @@ def nb_safe_divide(a, b):
 			c[i] = a[i] / b[i]
 	return c
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_average(arr, window_size):
 	
 	# create an output array
@@ -22,12 +22,12 @@ def nb_causal_rolling_average(arr, window_size):
 	new_arr = np.hstack((np.ones(window_size-1) * arr[0], arr))
 	
 	# for each output element, find the mean of the last few input elements
-	for i in range(out_arr.shape[0]):
+	for i in nb.prange(out_arr.shape[0]):
 		out_arr[i] = np.mean(new_arr[i : i + window_size])
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_sd(arr, window_size):
 	
 	# create an output array
@@ -38,7 +38,7 @@ def nb_causal_rolling_sd(arr, window_size):
 	
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
-	for i in range(out_arr.shape[0]):
+	for i in nb.prange(out_arr.shape[0]):
 		num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
 		denom = np.std(new_arr[i : i + window_size-1])
 		if denom != 0.0:
@@ -46,7 +46,7 @@ def nb_causal_rolling_sd(arr, window_size):
 	
 	return out_arr
 	
-@nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True, cache=True)
+@nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True)
 def nb_calc_sentiment_score_a(sent_a, sent_b, ra_win_size, std_win_size):
 	# example method for creating a stationary sentiment score based on Augmento data
 	

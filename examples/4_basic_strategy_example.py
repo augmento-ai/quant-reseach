@@ -31,7 +31,8 @@ n_days = 7
 window_size = 24 * n_days
 
 # generate the sentiment score
-sent_score = ah.nb_calc_sentiment_score_a(aug_signal_a, aug_signal_b, window_size, window_size)
+for i in range(100):
+	sent_score = ah.nb_calc_sentiment_score_a(aug_signal_a, aug_signal_b, window_size, window_size)
 
 # define some parameters for the backtest
 start_pnl = 1.0
