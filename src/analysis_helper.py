@@ -61,6 +61,22 @@ def nb_calc_sentiment_score_a(sent_a, sent_b, ra_win_size, std_win_size):
 	
 	return sent_score
 
+@nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True)
+def nb_calc_sentiment_score_b(sent_a, sent_b, ra_win_size_short, ra_win_size_long):
+	# example method for creating a stationary sentiment score based on Augmento data
+	
+	# compare the raw sentiment values
+	sent_ratio = nb_safe_divide(sent_a, sent_b)
+	
+	# smooth the sentiment ratio
+	sent_ratio_short = nb_causal_rolling_average(sent_ratio, ra_win_size_short)
+	sent_ratio_long = nb_causal_rolling_average(sent_ratio, ra_win_size_long)
+	
+	# create a stationary(ish) representation of the smoothed sentiment ratio
+	sent_score = sent_ratio_short - sent_ratio_long
+	
+	return sent_score
+
 @nb.jit("(f8[:])(f8[:], f8[:], f8, f8)", nopython=True, nogil=True, cache=True)
 def nb_backtest_a(price, sent_score, start_pnl, buy_sell_fee):
 	# example backtest with approximate model for long/short contracts
