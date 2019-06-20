@@ -42,6 +42,7 @@ ax[1].plot(datenum_aug_data, aug_signal_b, color="r", linewidth=0.5)
 # label axes
 ax[0].set_ylabel("Price")
 ax[1].set_ylabel("Seniments")
+ax[1].legend(["Bullish", "Bearish"])
 
 # generate the time axes
 plt.subplots_adjust(bottom=0.2)
