@@ -9,7 +9,6 @@ import matplotlib.dates as md
 # import files from src
 sys.path.insert(0, "src")
 import example_helper as eh
-import analysis_helper as ah
 
 # define the location of the input file
 filename_augmento_topics = "data/example_data/augmento_topics.msgpack.zlib"
@@ -26,19 +25,14 @@ aug_topics, aug_topics_inv, t_aug_data, aug_data, t_price_data, price_data = all
 aug_signal_a = aug_data[:, aug_topics_inv["Bullish"]].astype(np.float64)
 aug_signal_b = aug_data[:, aug_topics_inv["Bearish"]].astype(np.float64)
 
-# define the window size for the sentiment score calculation
-n_days = 7
-window_size = 24 * n_days
+import analysis_helper as ah
 
-# generate the sentiment score
-sent_score = ah.nb_calc_sentiment_score_a(aug_signal_a, aug_signal_b, window_size, window_size)
+ratio = ah.nb_safe_divide(aug_signal_a, aug_signal_b)
 
-# define some parameters for the backtest
-start_pnl = 1.0
-buy_sell_fee = 0.0075
+smooth_ratio_1 = ah.nb_causal_rolling_average(ratio, 24*7)
+smooth_ratio_2 = ah.nb_causal_rolling_average(smooth_ratio_1, 24*7)
 
-# run the backtest
-pnl = ah.nb_backtest_a(price_data, sent_score, start_pnl, buy_sell_fee)
+signal = smooth_ratio_1 - smooth_ratio_2
 
 # set up the figure
 fig, ax = plt.subplots(3, 1, sharex=True, sharey=False)
@@ -52,23 +46,25 @@ ax[0].grid(linewidth=0.4)
 ax[1].grid(linewidth=0.4)
 ax[2].grid(linewidth=0.4)
 ax[0].plot(datenum_price_data, price_data, linewidth=0.5)
-ax[1].plot(datenum_aug_data, sent_score, linewidth=0.5)
-ax[2].plot(datenum_price_data, pnl, linewidth=0.5)
+ax[1].plot(datenum_aug_data, ratio, linewidth=0.5, alpha=0.5)
+ax[1].plot(datenum_aug_data, smooth_ratio_1, linewidth=0.8)
+ax[1].plot(datenum_aug_data, smooth_ratio_2, linewidth=0.8)
+ax[2].plot(datenum_aug_data, signal, linewidth=0.5)
 
 # label axes
 ax[0].set_ylabel("Price")
-ax[1].set_ylabel("Seniment score")
-ax[2].set_ylabel("PnL")
-ax[1].set_ylim([-5.5, 5.5])
-
-ax[0].set_title("4_basic_strategy_example.py")
+ax[1].set_ylabel("Sentiment ratio")
+ax[2].set_ylabel("Sentiment signal")
+#ax[1].legend(["Raw ratio", "Short smooth ratio", "Long smooth ratio"])
 
 # generate the time axes
 plt.subplots_adjust(bottom=0.2)
 plt.xticks( rotation=25 )
 ax[0]=plt.gca()
-xfmt = md.DateFormatter('%Y-%m-%d')
+xfmt = md.DateFormatter('%Y-%m-%d %H:%M')
 ax[0].xaxis.set_major_formatter(xfmt)
 
 # show the plot
 plt.show()
+
+

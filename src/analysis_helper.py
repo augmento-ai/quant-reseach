@@ -100,7 +100,7 @@ def nb_backtest_a(price, sent_score, start_pnl, buy_sell_fee):
 			pnl[i_p] = pnl[i_p-1]
 		
 		# simulate a trade fee if we cross from long to short, or visa versa
-		if np.sign(sent_score[i_p]) != np.sign(sent_score[i_p-1]):
+		if i_p > 1 and np.sign(sent_score[i_p-1]) != np.sign(sent_score[i_p-2]):
 			pnl[i_p] = pnl[i_p] - (buy_sell_fee * pnl[i_p])
 	
 	return pnl
