@@ -35,7 +35,7 @@ sent_score = ah.nb_calc_sentiment_score_a(aug_signal_a, aug_signal_b, window_siz
 
 # define some parameters for the backtest
 start_pnl = 1.0
-buy_sell_fee = 0.0075
+buy_sell_fee = 0.0
 
 # run the backtest
 pnl = ah.nb_backtest_a(price_data, sent_score, start_pnl, buy_sell_fee)
@@ -61,7 +61,7 @@ ax[1].set_ylabel("Seniment score")
 ax[2].set_ylabel("PnL")
 ax[1].set_ylim([-5.5, 5.5])
 
-ax[0].set_title("4_basic_strategy_example.py")
+#ax[0].set_title("4_basic_strategy_example.py")
 
 # generate the time axes
 plt.subplots_adjust(bottom=0.2)
