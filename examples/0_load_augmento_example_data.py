@@ -18,10 +18,8 @@ path_save_data = "data/example_data"
 filename_save_data = "{:s}/augmento_data.msgpack.zlib".format(path_save_data)
 
 # define the start and end times
-#datetime_start = datetime.datetime(2017, 1, 1)
-#datetime_end = datetime.datetime(2019, 5, 1)
-datetime_start = datetime.datetime(2018, 10, 1)
-datetime_end = datetime.datetime(2019, 6, 22, 9, 0)
+datetime_start = datetime.datetime(2017, 1, 1)
+datetime_end = datetime.datetime(2019, 5, 1)
 
 # initialise a store for the data we're downloading
 sentiment_data = []
@@ -45,7 +43,7 @@ while start_ptr >= 0:
 	}
 	
 	# make the request
-	r = requests.request("GET", endpoint_url, params=params, timeout=10, headers={"api-key":"OQrObWAObcUthKTfwK6m"})
+	r = requests.request("GET", endpoint_url, params=params, timeout=10)
 	
 	# if the request was ok, add the data and increment the start_ptr
 	# else return an error
