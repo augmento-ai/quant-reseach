@@ -186,41 +186,39 @@ def nb_backtest_a(price, sent_score, start_pnl, buy_sell_fee):
 
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
 def moving_average(arr, window):
-
-	leading_arr = np.zeros(arr.shape[0])
-
+        
+        # output array
+	ma_arr = np.zeros(arr.shape[0])
+        
+        # add space for rolling window
 	new_arr = np.hstack((np.ones(window-1) * arr[0], arr))
-
+        
+        # calculate moving average
 	for i in nb.prange(arr.shape[0]):
-                #window_size = round(np.random.normal(window_size_rand, window_size_std))       
 		num = new_arr[i+window-1] - np.mean(new_arr[i : i+window-1])
 		denom = np.std(new_arr[i : i + window-1])
 		if denom != 0.0:
-                        leading_arr[i] = num / denom
+                        ma_arr[i] = num / denom
 
-	return leading_arr 
+	return ma_arr 
 
 
 @nb.jit("(f8[:])(f8[:], f8[:], f8[:], f8, f8, f8)",nopython=True, nogil=True,cache=True)
-def sma_crossover_backtest(price, lead, lag, start_pnl, buy_sell_fee, threshold=0.0):
-	# create an output array
-	leading_arr = lead
-	lagging_arr = lag
-	
+def sma_crossover_backtest(price, leading_arr, lagging_arr, start_pnl, buy_sell_fee, threshold=0.0):
+
 	# create an array to hold our pnl, and set the first value
 	pnl = np.zeros(price.shape, dtype=np.float64)
 	pnl[0] = start_pnl
 
-	#BUY if Leading SMA is above Lagging SMA by some threshold.
-	#SELL if Leading SMA is below Lagging SMA by some threshold.
-
-	sent_signal = leading_arr - lagging_arr
-
-	# for each step, run the market model
+	# BUY if Leading SMA is above Lagging SMA by some threshold.
+	# SELL if Leading SMA is below Lagging SMA by some threshold.
+        sent_signal = leading_arr - lagging_arr
+	
+        # for each step, run the market model
 	for i_p in range(1, price.shape[0]):
-			if sent_signal[i_p-1] > 0.0:
+			if sent_signal[i_p-1] > threshold:
 					pnl[i_p] = (price[i_p] / price[i_p-1]) * pnl[i_p-1]
-			elif sent_signal[i_p-1] < 0.0:
+			elif sent_signal[i_p-1] < threshold:
 					pnl[i_p] = (price[i_p-1] / price[i_p]) * pnl[i_p-1]
 			elif sent_signal[i_p-1] == threshold:
 				pnl[i_p] = pnl[i_p-1]
