@@ -212,9 +212,9 @@ def sma_crossover_backtest(price, leading_arr, lagging_arr, start_pnl, buy_sell_
 
 	# BUY if Leading SMA is above Lagging SMA by some threshold.
 	# SELL if Leading SMA is below Lagging SMA by some threshold.
-        sent_signal = leading_arr - lagging_arr
+	sent_signal = leading_arr - lagging_arr
 	
-        # for each step, run the market model
+	# for each step, run the market model
 	for i_p in range(1, price.shape[0]):
 			if sent_signal[i_p-1] > threshold:
 					pnl[i_p] = (price[i_p] / price[i_p-1]) * pnl[i_p-1]
