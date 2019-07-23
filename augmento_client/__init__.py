@@ -4,7 +4,13 @@
 # @Email: arthur.bernard.92@gmail.com
 # @Date: 2019-07-22 15:12:28
 # @Last modified by: ArthurBernard
-# @Last modified time: 2019-07-22 17:22:59
+# @Last modified time: 2019-07-23 15:51:05
+
+""" Client connector to Augmento API.
+
+TODO : - websocket api.
+
+"""
 
 # Built-in packages
 

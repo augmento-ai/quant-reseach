@@ -4,9 +4,20 @@
 # @Email: arthur.bernard.92@gmail.com
 # @Date: 2019-07-22 15:03:30
 # @Last modified by: ArthurBernard
-# @Last modified time: 2019-07-23 14:25:41
+# @Last modified time: 2019-07-23 15:52:22
 
-""" Client connector to Augmento REST API. """
+""" Client connector to Augmento REST API.
+
+Examples
+--------
+>>> ra = RequestAugmento(logging_level='DEBUG')
+>>> df = ra.get_dataframe(source='twitter', coin='bitcoin', bin_size='24H', start='2019-06-01T00:00:00Z', end='2019-06-02T00:00:00Z')
+>>> print(df.loc[:, 'Hacks':'Banks'])
+                      Hacks  Pessimistic/Doubtful  Banks
+date                                                    
+2019-06-01T00:00:00Z      7                    15     33
+
+"""
 
 # Built-in packages
 import logging
@@ -21,6 +32,8 @@ import pandas as pd
 # Local packages
 
 __all__ = ['RequestAugmento']
+
+# TODO : add better doctests/examples
 
 
 class RequestAugmento:
@@ -263,4 +276,16 @@ def intel_date(date, form='%Y-%m-%dT%H:%M:%SZ'):
 
 
 if __name__ == '__main__':
-    ra = RequestAugmento(logging_level='DEBUG')
+
+    import doctest
+    import yaml
+    import logging.config
+
+    # Load config logging
+    with open('./augmento_client/logging.ini', 'rb') as f:
+        config = yaml.safe_load(f.read())
+
+    logging.config.dictConfig(config)
+
+    # Run tests
+    doctest.testmod()
