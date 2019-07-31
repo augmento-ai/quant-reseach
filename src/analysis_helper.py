@@ -202,6 +202,12 @@ def moving_average(arr, window):
 
 	return ma_arr 
 
+#@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+#def signal_ma(positive, negative, short, long):
+
+
+
+
 
 @nb.jit("(f8[:])(f8[:], f8[:], f8[:], f8, f8, f8)",nopython=True, nogil=True,cache=True)
 def sma_crossover_backtest(price, leading_arr, lagging_arr, start_pnl, buy_sell_fee, threshold=0.0):
