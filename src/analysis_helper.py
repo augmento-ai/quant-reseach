@@ -298,3 +298,48 @@ def sma_crossover_backtest(price, leading_arr, lagging_arr, start_pnl, buy_sell_
 	
 	return pnl
 
+
+#@nb.jit("(f8[:])(f8[:], f8[:], i8)", nopython=True, nogil=True, cache=True)
+#def forward_volume(volume_data, price_data, threshold=2000000):
+
+#    price_rate_change = np.full(len(volume_data), np.nan)
+
+#    for i in range(len(volume_data)):
+#        sum_volume = 0
+
+#        for j in range(len(price_data)):
+#            sum_volume += price_data[j]
+
+#            if sum_volume >= threshold:
+#                price_rate_change[i] = (price_data[j] - price_data[i])/price_data[i]
+#                break
+
+@nb.jit("(f8[:])(f8[:], f8[:], i8)", nopython=True, nogil=True, cache=True)
+def forward_volume(volume_data, price_data, threshold=2000000):
+
+    price_rate_change = np.zeros(len(price_data))
+
+    for i in range((len(volume_data))):
+        j = i+1
+        sum_volume = 0.0
+
+        while (sum_volume < threshold) & (j < len(price_rate_change)):
+            sum_volume += volume_data[j]
+
+            if sum_volume >= threshold:
+                price_rate_change[i] = (price_data[j]-price_data[i])/price_data[i]
+
+            j += 1
+
+    return price_rate_change
+            
+
+
+
+
+
+
+
+
+
+
