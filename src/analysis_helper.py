@@ -333,10 +333,35 @@ def forward_volume(volume_data, price_data, threshold=2000000):
 
     return price_rate_change
             
+@nb.jit("(f8[:])(f8[:], f8[:], f8)", nopython=True, nogil=True, cache=True)
+def forward_volume(volume_data, price_data, threshold):
 
+    price_rate_change = np.zeros(len(price_data))
 
+    for i in range((len(volume_data))):
+        j = i+1
+        sum_volume = 0.0
 
+        while (sum_volume < threshold) & (j < len(price_rate_change)):
+            sum_volume += volume_data[j]
 
+            if sum_volume >= threshold:
+                price_rate_change[i] = (price_data[j]-price_data[i])/price_data[i]
+
+            j += 1
+
+    return price_rate_change
+ 
+            
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, cache=True)
+def volume_normalized(volume_data, n_hours):
+    norm_volume = np.zeros(len(volume_data))
+    start = 0
+    for i in range(n_hours,len(volume_data), n_hours):
+        for j in range(start,i):
+            norm_volume[j] = volume_data[j]/np.sum(volume_data[start:i])
+        start = i 
+    return norm_volume
 
 
 
