@@ -34,7 +34,7 @@ date_time = np.array([datetime.datetime.utcfromtimestamp(t).isoformat()
 
 # define some parameters for the backtest
 start_pnl = 1.0
-buy_sell_fee = 0.0075
+buy_sell_fee = 0.00075
 # run the backtest
 pnl = ah.nb_backtest_a(price_data, sent_score, start_pnl, buy_sell_fee)
 # set up the figure

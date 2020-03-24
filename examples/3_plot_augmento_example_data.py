@@ -38,6 +38,7 @@ ax[1].grid(linewidth=0.4)
 ax[0].plot(datenum_price_data, price_data, linewidth=0.5)
 ax[1].plot(datenum_aug_data, aug_signal_a, color="g", linewidth=0.5)
 ax[1].plot(datenum_aug_data, aug_signal_b, color="r", linewidth=0.5)
+#ax[1].plot(datenum_aug_data, aug_data, linewidth=0.5)
 
 # label axes
 ax[0].set_ylabel("Price")

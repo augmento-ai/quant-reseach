@@ -45,7 +45,7 @@ def nb_causal_rolling_sd(arr, window_size):
 			out_arr[i] = num / denom
 	
 	return out_arr
-
+"""
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_sd_rand(arr, window_size_rand):
 	
@@ -66,7 +66,7 @@ def nb_causal_rolling_sd_rand(arr, window_size_rand):
 			out_arr[i] = num / denom
 	
 	return out_arr
-
+"""
 
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_norm(arr, window_size):
@@ -86,7 +86,7 @@ def nb_causal_rolling_norm(arr, window_size):
 			out_arr[i] = num / denom
 	
 	return out_arr
-	
+"""
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_norm_rand(arr, window_size_rand):
         window_size = np.random.normal(window_size_rand, 1)	
@@ -105,6 +105,7 @@ def nb_causal_rolling_norm_rand(arr, window_size_rand):
 			out_arr[i] = num / denom
 	
 	return out_arr
+"""
 @nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True)
 def nb_calc_sentiment_score_a(sent_a, sent_b, ra_win_size, std_win_size):
 	# example method for creating a stationary sentiment score based on Augmento data
