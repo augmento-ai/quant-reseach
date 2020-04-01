@@ -45,21 +45,10 @@ def nb_causal_rolling_sd(arr, window_size):
 			out_arr[i] = num / denom
 	
 	return out_arr
-<<<<<<< HEAD
-"""
+
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_sd_rand(arr, window_size_rand):
 	
-	# create an output array
-	out_arr = np.zeros(arr.shape[0])
-        
-        window_size = np.random.normal(window_size_rand, 1)
-=======
-
-@nb.jit("(f8[:])(f8[:], i8, i8)", nopython=True, nogil=True, parallel=True)
-def nb_causal_rolling_sd_rand(arr, window_size_rand, window_size_std):
->>>>>>> f83c458c75b212a3398b60e136dea57f8d1b13d6
-
 	# create an output array               
 	out_arr = np.zeros(arr.shape[0])
 			
@@ -71,19 +60,14 @@ def nb_causal_rolling_sd_rand(arr, window_size_rand, window_size_std):
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
 	for i in nb.prange(out_arr.shape[0]):
+		window_size_std = 1.0
 		window_size = round(np.random.normal(window_size_rand, window_size_std))       
 		num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
 		denom = np.std(new_arr[i : i + window_size-1])
 		if denom != 0.0:
 			out_arr[i] = num / denom
-<<<<<<< HEAD
 	
 	return out_arr
-"""
-=======
-
-	return out_arr
->>>>>>> f83c458c75b212a3398b60e136dea57f8d1b13d6
 
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_norm(arr, window_size):
@@ -103,16 +87,10 @@ def nb_causal_rolling_norm(arr, window_size):
 					out_arr[i] = num / denom
 	
 	return out_arr
-<<<<<<< HEAD
-"""
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
-def nb_causal_rolling_norm_rand(arr, window_size_rand):
-        window_size = np.random.normal(window_size_rand, 1)	
-=======
-	
+
 @nb.jit("(f8[:])(f8[:], i8, f8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_norm_rand(arr, window_size_rand, peturb):
->>>>>>> f83c458c75b212a3398b60e136dea57f8d1b13d6
+	
 	# create an output array
 	out_arr = np.zeros(arr.shape[0])
 	
@@ -143,10 +121,6 @@ def nb_causal_rolling_norm_rand(arr, window_size_rand, peturb):
 		#	out_arr[i] = num / denom
 	
 	return out_arr
-<<<<<<< HEAD
-"""
-=======
-
 
 @nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
 def nb_causal_rolling_average(arr, window_size):
@@ -197,7 +171,6 @@ def nb_calc_sentiment_score_rand_a(sent_a, sent_b, ra_win_size, std_win_size, pe
 	
 	return sent_score
 
->>>>>>> f83c458c75b212a3398b60e136dea57f8d1b13d6
 @nb.jit("(f8[:])(f8[:], f8[:], i8, i8)", nopython=True, nogil=True)
 def nb_calc_sentiment_score_a(sent_a, sent_b, ra_win_size, std_win_size):
 	# example method for creating a stationary sentiment score based on Augmento data
