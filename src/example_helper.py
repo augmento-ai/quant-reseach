@@ -31,7 +31,8 @@ def load_example_data(filename_augmento_topics,
 	with open(filename_bitmex_data, "rb") as f:
 		temp = msgpack.unpackb(zlib.decompress(f.read()), encoding='utf-8')
 		t_price_data = np.array([el["t_epoch"] for el in temp], dtype=np.float64)
-		price_data = np.array([el["open"] for el in temp], dtype=np.float64)
+		#price_data = np.array([el["open"] for el in temp], dtype=np.float64)
+		price_data = np.array([el["close"] for el in temp], dtype=np.float64)
 	
 	# set the start and end times if they are specified
 	if datetime_start != None:
