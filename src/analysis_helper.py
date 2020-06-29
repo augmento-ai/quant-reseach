@@ -12,7 +12,7 @@ def nb_safe_divide(a, b):
 			c[i] = a[i] / b[i]
 	return c
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_average(arr, window_size):
 	
 	# create an output array
@@ -22,12 +22,13 @@ def nb_causal_rolling_average(arr, window_size):
 	new_arr = np.hstack((np.ones(window_size-1) * arr[0], arr))
 	
 	# for each output element, find the mean of the last few input elements
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 		out_arr[i] = np.mean(new_arr[i : i + window_size])
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_sd(arr, window_size):
 	
 	# create an output array
@@ -38,7 +39,8 @@ def nb_causal_rolling_sd(arr, window_size):
 	
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 		num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
 		denom = np.std(new_arr[i : i + window_size-1])
 		if denom != 0.0:
@@ -46,7 +48,7 @@ def nb_causal_rolling_sd(arr, window_size):
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_sd_rand(arr, window_size_rand):
 	
 	# create an output array               
@@ -59,7 +61,8 @@ def nb_causal_rolling_sd_rand(arr, window_size_rand):
 	new_arr = np.hstack((np.ones(window_size_rand-1) * arr[0], arr))
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 		window_size_std = 1.0
 		window_size = round(np.random.normal(window_size_rand, window_size_std))       
 		num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size-1])
@@ -69,7 +72,7 @@ def nb_causal_rolling_sd_rand(arr, window_size_rand):
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_norm(arr, window_size):
 	
 	# create an output array
@@ -80,7 +83,8 @@ def nb_causal_rolling_norm(arr, window_size):
 	
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 			num = new_arr[i+window_size-1] - np.mean(new_arr[i : i + window_size])
 			denom = np.max(np.abs(new_arr[i : i + window_size] - np.mean(new_arr[i : i + window_size])))
 			if denom != 0.0:
@@ -88,7 +92,7 @@ def nb_causal_rolling_norm(arr, window_size):
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8, f8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8, f8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_norm_rand(arr, window_size_rand, peturb):
 	
 	# create an output array
@@ -101,7 +105,8 @@ def nb_causal_rolling_norm_rand(arr, window_size_rand, peturb):
 	
 	# for each output element, find the mean and std of the last few
 	# input elements, and standardise the input element by the mean and std of the window
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 
 		window_size_std = peturb * np.float64(window_size_rand)
 		window_size = round(np.random.normal(window_size_rand, window_size_std))
@@ -122,7 +127,7 @@ def nb_causal_rolling_norm_rand(arr, window_size_rand, peturb):
 	
 	return out_arr
 
-@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=True)
+@nb.jit("(f8[:])(f8[:], i8)", nopython=True, nogil=True, parallel=False)
 def nb_causal_rolling_average(arr, window_size):
 	
 	# create an output array
@@ -132,7 +137,8 @@ def nb_causal_rolling_average(arr, window_size):
 	new_arr = np.hstack((np.ones(window_size-1) * arr[0], arr))
 	
 	# for each output element, find the mean of the last few input elements
-	for i in nb.prange(out_arr.shape[0]):
+	#for i in nb.prange(out_arr.shape[0]):
+	for i in range(out_arr.shape[0]):
 		out_arr[i] = np.mean(new_arr[i : i + window_size])
 	
 	return out_arr
@@ -258,7 +264,8 @@ def moving_average(arr, window):
 	new_arr = np.hstack((np.ones(window-1) * arr[0], arr))
 		
 		# calculate moving average
-	for i in nb.prange(arr.shape[0]):
+	#for i in nb.prange(arr.shape[0]):
+	for i in range(arr.shape[0]):
 		num = new_arr[i+window-1] - np.mean(new_arr[i : i+window-1])
 		denom = np.std(new_arr[i : i + window-1])
 		if denom != 0.0:
