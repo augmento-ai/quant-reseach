@@ -238,11 +238,14 @@ def nb_backtest_a(price, sent_score, start_pnl, buy_sell_fee):
 		# else if sentiment score is negative, simulate short position
 		# else if the sentiment score is 0.0, hold
 		# (note that this is a very approximate market simulation!)
-		if sent_score[i_p-1] > 0.0:
+		n_sample_delay = 2
+		if i_p < n_sample_delay:
+			pnl[i_p] = pnl[i_p-1]
+		if sent_score[i_p-n_sample_delay] > 0.0:
 			pnl[i_p] = (price[i_p] / price[i_p-1]) * pnl[i_p-1]
-		elif sent_score[i_p-1] <= 0.0:
+		elif sent_score[i_p-n_sample_delay] <= 0.0:
 			pnl[i_p] = (price[i_p-1] / price[i_p]) * pnl[i_p-1]
-		elif sent_score[i_p-1] == 0.0:
+		elif sent_score[i_p-n_sample_delay] == 0.0:
 			pnl[i_p] = pnl[i_p-1]
 		
 		# simulate a trade fee if we cross from long to short, or visa versa
